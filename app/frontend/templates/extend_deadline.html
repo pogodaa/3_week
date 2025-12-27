@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Продлить срок заявки{% endblock %}
+{% block header %}Продлить срок выполнения заявки №{{ req.requestID }}{% endblock %}
+{% block content %}
+<div style="max-width: 600px; margin: 0 auto;">
+
+  <p style="background: #e9ecef; padding: 10px; border-radius: 4px; margin-bottom: 20px;">
+    <strong>Клиент:</strong> {{ client_fio }}
+  </p>
+
+  {% if error %}
+    <div style="background: #f8d7da; color: #721c24; padding: 12px; border-radius: 4px; margin-bottom: 20px;">
+      {{ error }}
+    </div>
+  {% endif %}
+
+  <form method="post">
+    <label>Текущая дата создания:</label>
+    <input type="text" value="{{ req.startDate }}" disabled
+           style="width:100%; padding:8px; margin:6px 0; border:1px solid #ccc; border-radius:4px; background: #f5f5f5;">
+
+    {% if req.expectedCompletionDate %}
+    <label>Текущая ожидаемая дата завершения:</label>
+    <input type="text" value="{{ req.expectedCompletionDate }}" disabled
+           style="width:100%; padding:8px; margin:6px 0; border:1px solid #ccc; border-radius:4px; background: #f5f5f5;">
+    {% endif %}
+
+    <label>Новая ожидаемая дата завершения:</label>
+    <input type="date" name="new_date" 
+           required
+           min="{{ req.startDate }}"
+           style="width:100%; padding:8px; margin:6px 0; border:1px solid #ccc; border-radius:4px;">
+
+    <label style="display: flex; align-items: center; margin: 15px 0;">
+      <input type="checkbox" name="client_agreement" value="yes" required
+             style="margin-right: 8px; width: auto;">
+      <span>Клиент согласен с продлением срока выполнения заявки</span>
+    </label>
+
+    <p style="text-align: center; margin-top: 20px;">
+      <button type="submit" class="button button-primary" 
+              style="width: 160px; height: 42px; line-height: 42px; margin-right: 20px; padding: 0;">
+        Продлить срок
+      </button>
+      <a href="/" class="button button-primary" 
+         style="width: 140px; height: 42px; line-height: 42px; text-decoration: none; display: inline-block; padding: 0;">
+        Отмена
+      </a>
+    </p>
+  </form>
+</div>
+{% endblock %}
+
+
+

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Обращения за помощью{% endblock %}
+{% block header %}Обращения мастеров за помощью{% endblock %}
+{% block content %}
+
+{% if help_requests %}
+<table>
+  <thead>
+    <tr>
+      <th>ID заявки</th>
+      <th>Мастер</th>
+      <th>Тип оборудования</th>
+      <th>Сообщение</th>
+      <th>Дата обращения</th>
+      <th>Действия</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for help_req in help_requests %}
+    <tr>
+      <td>
+        <a href="/" style="color: #007bff; text-decoration: none;">#{{ help_req.requestID }}</a>
+      </td>
+      <td>{{ get_user_fio(help_req.masterID) }}</td>
+      <td>
+        {% if requests_dict.get(help_req.requestID) %}
+          {{ requests_dict[help_req.requestID].applianceType }}
+        {% else %}
+          -
+        {% endif %}
+      </td>
+      <td style="max-width: 300px; word-wrap: break-word;">{{ help_req.message }}</td>
+      <td>{{ help_req.created_at if help_req.created_at else "-" }}</td>
+      <td>
+        <a href="/edit/{{ help_req.requestID }}" class="button">✏️ Редактировать заявку</a>
+        <a href="/extend/{{ help_req.requestID }}" class="button" style="background: #2196F3;">📅 Продлить срок</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<div style="text-align: center; padding: 40px; background: #f8f9fa; border-radius: 6px; margin: 20px 0;">
+  <p style="font-size: 18px; color: #6c757d;">Нет обращений за помощью</p>
+</div>
+{% endif %}
+
+<a href="/" class="button">← Назад</a>
+{% endblock %}
+
+
+

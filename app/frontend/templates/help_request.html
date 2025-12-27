@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Обратиться за помощью{% endblock %}
+{% block header %}Обратиться за помощью по заявке №{{ request_id }}{% endblock %}
+{% block content %}
+<div style="max-width: 600px; margin: 0 auto;">
+  <div style="background: #fff3cd; padding: 15px; border-radius: 6px; margin-bottom: 20px; border-left: 4px solid #ff9800;">
+    <strong>⚠️ Обращение за помощью</strong>
+    <p style="margin: 8px 0 0; font-size: 14px;">
+      Опишите проблему, с которой вы столкнулись при выполнении ремонта. Менеджер получит уведомление и поможет решить проблему.
+    </p>
+  </div>
+
+  <form method="post">
+    <label>Описание проблемы:</label>
+    <textarea name="message" 
+              placeholder="Опишите проблему, которая мешает выполнить ремонт в срок. Например: отсутствие необходимых запчастей, необходимость консультации, технические сложности и т.д."
+              required minlength="10" maxlength="1000"
+              style="width:100%; padding:8px; margin:6px 0; border:1px solid #ccc; border-radius:4px; height: 150px;"></textarea>
+
+    <p style="text-align: center; margin-top: 20px;">
+      <button type="submit" class="button button-primary" 
+              style="width: 180px; height: 42px; line-height: 42px; margin-right: 20px; padding: 0; background: #ff9800;">
+        Отправить обращение
+      </button>
+      <a href="/" class="button button-primary" 
+         style="width: 140px; height: 42px; line-height: 42px; text-decoration: none; display: inline-block; padding: 0;">
+        Отмена
+      </a>
+    </p>
+  </form>
+</div>
+{% endblock %}
+
+
+

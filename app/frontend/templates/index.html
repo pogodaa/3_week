@@ -1,0 +1,115 @@
+<!-- app/frontend/templates/index.html -->
+{% extends "base.html" %}
+{% block title %}Заявки на ремонт{% endblock %}
+{% block header %}Заявки на ремонт{% endblock %}
+{% block content %}
+
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Дата создания</th>
+      <th>Тип оборудования</th>
+      <th>Статус</th>
+      <th>Мастер</th>
+      {% if user_role != "client" %}
+        <th>Действия</th>
+      {% endif %}
+    </tr>
+  </thead>
+  <tbody>
+    {% for req in requests %}
+    <tr>
+      <td>{{ req.requestID }}</td>
+      <td>{{ req.startDate }}</td>
+      <td>{{ req.applianceType }}</td>
+      <td>{{ req.requestStatus }}</td>
+      <td>
+        {% if req.masterID %}
+          {{ get_user_fio(req.masterID) }}
+        {% else %}
+          <em>Не назначен</em>
+        {% endif %}
+      </td>
+      <td>
+        {% if user_role == "specialist" and req.masterID == current_user_id %}
+          <a href="/comment/{{ req.requestID }}" class="button">💬 Комментарий</a>
+          <a href="/help/{{ req.requestID }}" class="button" style="background: #ff9800;">🆘 Обратиться за помощью</a>
+        {% elif user_role == "operator" %}
+          <a href="/edit/{{ req.requestID }}" class="button">✏️ Редактировать</a>
+        {% elif user_role in ["manager", "admin"] %}
+          <a href="/assign/{{ req.requestID }}" class="button">Назначить</a>
+          <a href="/edit/{{ req.requestID }}" class="button">✏️ Редактировать</a>
+          <a href="/extend/{{ req.requestID }}" class="button" style="background: #2196F3;">📅 Продлить срок</a>
+        {% endif %}
+      </td>
+    </tr>
+    <!-- Ожидаемая дата завершения (если установлена) -->
+    {% if req.expectedCompletionDate %}
+      <tr>
+        <td colspan="6" style="padding-top: 0; border-top: none;">
+          <div style="background: #e3f2fd; padding: 8px; border-radius: 4px; margin-top: 4px; font-size: 13px;">
+            <strong>📅 Ожидаемая дата завершения:</strong> {{ req.expectedCompletionDate }}
+          </div>
+        </td>
+      </tr>
+    {% endif %}
+    <!-- Обращения за помощью -->
+    {% if req.help_comments %}
+      <tr>
+        <td colspan="6" style="padding-top: 0; border-top: none;">
+          <div style="background: #fff3cd; padding: 12px; border-radius: 4px; margin-top: 8px; font-size: 14px; border-left: 4px solid #ff9800;">
+            <strong>🆘 Обращения за помощью:</strong>
+            <ul style="margin: 8px 0 0; padding-left: 20px;">
+              {% for comment in req.help_comments %}
+                <li>
+                  <em>{{ get_user_fio(comment.masterID) }}</em>: 
+                  "{{ comment.message }}"
+                  {% if comment.created_at %}
+                    <small style="color: #6c757d;">({{ comment.created_at }})</small>
+                  {% endif %}
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+        </td>
+      </tr>
+    {% endif %}
+    <!-- Обычные комментарии -->
+    {% if req.regular_comments %}
+      <tr>
+        <td colspan="6" style="padding-top: 0; border-top: none;">
+          <div style="background: #f8f9fa; padding: 12px; border-radius: 4px; margin-top: 8px; font-size: 14px;">
+            <strong>Комментарии:</strong>
+            <ul style="margin: 8px 0 0; padding-left: 20px;">
+              {% for comment in req.regular_comments %}
+                <li>
+                  <em>{{ get_user_fio(comment.masterID) }}</em>: 
+                  "{{ comment.message }}"
+                  {% if comment.created_at %}
+                    <small style="color: #6c757d;">({{ comment.created_at }})</small>
+                  {% endif %}
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+        </td>
+      </tr>
+    {% endif %}
+    <!-- QR-код для заказчика под завершёнными заявками -->
+    {% if user_role == "client" and req.requestStatus == "Готова к выдаче" %}
+      <tr>
+        <td colspan="6" style="padding: 15px 0 0; border: none;">
+          <div style="background: #e9f7ef; padding: 12px; border-radius: 6px; display: inline-block; text-align: center;">
+            <strong>✅ Заявка выполнена! Оцените качество обслуживания:</strong><br>
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https%3A%2F%2Fdocs.google.com%2Fforms%2Fd%2Fe%2F1FAIpQLSdhZcExx6LSIXxk0ub55mSu-WIh23WYdGG9HY5EZhLDo7P8eA%2Fviewform" 
+                 alt="QR-код для отзыва"
+                 style="margin-top: 8px; vertical-align: middle;">
+          </div>
+        </td>
+      </tr>
+    {% endif %}
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
